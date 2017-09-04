@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FSUIP map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style>
+       #map {
+        height: 400px;
+        width: 100%;
+       }
+    </style>
+  </head>
+  <body>
+  	<div class="container text-center">
+	    <h1>Sistemas de Telecomunicações na Aeronáutica</h1><br>
+       <div id="info">
+        <ul>
+          latitude:<br><li id="1">loading data</li>
+          longitude:<br><li id="2">loading data</li>
+  <!--    <li id="3">loading data</li>
+          <li id="4">loading data</li>
+          <li id="5">loading data</li> -->
+        </ul>
+      </div>
+	    <button class="btn btn-primary" onclick="Map()">onde está o meu avião ?</button>
+      <br><br>
+		  <div id="map"></div>
+     
+    </div>
+	 
+    <script src="/js/socket.io.js"></script>
+    <script>
+      
+      var socket = io();
+      socket.on('info', function(data){
+        lati = parseFloat(data.Latitude);
+        longi = parseFloat(data.Longitude);
+        /*
+        alt = parseInt(data.Altitude);
+        realSpeed = parseInt(data.RealAirSpeed);
+        indcSpeed = parseInt(data.IndcAirSpeed);*/
+        $("li#1").html(lati+" º");
+        $("li#2").html(longi+" º");
+        window.pos = {lat: lati, lng: longi};
+        markers[0].setPosition(window.pos);
+      });
+    </script>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script>
+      $("button").click(function(){
+        $.getScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDlUf7ZoQkOofMmNDAPdLaP_JW9M06xb4I&callback=Map");
+      }); 
+    </script>
+    <script>
+      var markers = [];
+      function Map() { 
+        var icon = {
+            url: "/images/plane.png", 
+            scaledSize: new google.maps.Size(50, 50),
+            origin: new google.maps.Point(0,0), 
+            anchor: new google.maps.Point(0, 0) 
+        };
+        window.map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: window.pos
+        });
+        var marker = new google.maps.Marker({
+              position: window.pos,
+              map: map,
+              icon: icon
+            });
+        markers.push(marker);
+      }
+      </script>
+
+	</body>
+</html>
